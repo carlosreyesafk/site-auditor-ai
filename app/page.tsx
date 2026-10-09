@@ -32,6 +32,13 @@ export default function Home() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showChecks, setShowChecks] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  // Ref mirror of url so runAudit always reads the latest typed value,
+  // even if the state closure is stale on the first submit.
+  const urlRef = useRef('');
+  const setUrlSync = useCallback((v: string) => {
+    urlRef.current = v;
+    setUrl(v);
+  }, []);
 
   useEffect(() => {
     try {
@@ -49,7 +56,7 @@ export default function Home() {
   }, []);
 
   const runAudit = useCallback(async (target?: string) => {
-    const u = (target ?? url).trim();
+    const u = (target ?? urlRef.current).trim();
     if (!u) { setError('Enter a URL to audit.'); return; }
     if (abortRef.current) abortRef.current.abort();
     const ctrl = new AbortController();
@@ -115,7 +122,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => setUrlSync(e.target.value)}
               placeholder="https://example.com"
               spellCheck={false}
               className="flex-1 px-5 py-4 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-400/60 focus:ring-2 focus:ring-violet-500/20 font-mono text-sm transition-all"
@@ -140,7 +147,7 @@ export default function Home() {
             {['https://example.com', 'https://github.com', 'https://vercel.com'].map((u) => (
               <button
                 key={u}
-                onClick={() => { setUrl(u); runAudit(u); }}
+                onClick={() => { setUrlSync(u); runAudit(u); }}
                 className="text-xs font-mono text-zinc-500 hover:text-violet-300 underline underline-offset-2 decoration-zinc-700 mx-1.5"
               >
                 {u.replace('https://', '')}
@@ -258,7 +265,7 @@ export default function Home() {
               {history.map((h) => (
                 <button
                   key={h.url + h.timestamp}
-                  onClick={() => { setUrl(h.url); runAudit(h.url); }}
+                  onClick={() => { setUrlSync(h.url); runAudit(h.url); }}
                   className="text-left rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-violet-400/40 transition-all"
                 >
                   <div className="flex items-center justify-between mb-2">
