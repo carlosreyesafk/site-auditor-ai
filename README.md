@@ -2,7 +2,7 @@
 
 **Professional website audits in seconds.** Paste any URL → get instant scores for SEO, accessibility, performance and best practices, with prioritized, actionable fixes.
 
-🌐 **Live demo:** https://site-auditor-ai.vercel.app *(URL updates after deploy)*
+🌐 **Live demo:** https://site-auditor-qdmfkfgs1-carlosreyesafks-projects.vercel.app
 
 ## What it does
 
